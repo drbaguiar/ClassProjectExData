@@ -10,31 +10,33 @@ if (!exists("data")){
         # Read text file
         datafull <-read.table("household_power_consumption.txt", header = TRUE, sep =";")
         
+        #clean the file
+        names(datafull) <-tolower(names(datafull))
+        
         #Convert Global_active_power to numeric and date to date
-        datafull$Global_active_power <- as.numeric(datafull$Global_active_power)
-        datafull$Date = as.Date(datafull$Date, format = "%d/%m/%Y" )
+        datafull$global_active_power <- as.numeric(datafull$global_active_power)
+        datafull$date = as.Date(datafull$date, format = "%d/%m/%Y" )
         
         #Get the relevant records
-        data <- datafull[(datafull$Date == "2007-02-01" | datafull$Date == "2007-02-02") , ]
+        data <- datafull[(datafull$date == "2007-02-01" | datafull$date == "2007-02-02") , ]
         
-        #Convert date and time
-        datetime <- paste(data$Date, data$Time)
-        data$Datetime <- as.POSIXct(datetime)
+        #Create new field containing date and time combined
+        datetime <- paste(data$date, data$time)
+        data$datetime <- as.POSIXct(datetime)
         
         #Remove the full file 
         rm(datafull)
-        
 }
 
 ## write output to .png file
 png(filename = "plot3.png", width = 480, height = 480, units = "px", pointsize = 12, bg = "white")
 
-plot(data$Datetime, data$Sub_metering_1, 
+plot(data$datetime, data$sub_metering_1, 
      type = "l",
      col = "black",
      xlab = "", ylab = "Energy sub metering")
-lines(data$Datetime, data$Sub_metering_2, col = "red")
-lines(data$Datetime, data$Sub_metering_3, col = "blue")
+lines(data$datetime, data$sub_metering_2, col = "red")
+lines(data$datetime, data$sub_metering_3, col = "blue")
 legend("topright", 
        col = c("black", "red", "blue"),
        c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"),
